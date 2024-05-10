@@ -7,8 +7,8 @@ const bookSchema = mongoose.Schema({
     imageUrl: { type: String, required: true },
     year: { type: Number, required: true },
     genre: { type: String, required: true },
-    rating: { type: [{userId: String, grade: Number}], required: false},
-    averageRating: { type: Number, required: false}
+    ratings: { type: [{userId: String, grade: Number}], required: true},
+    averageRating: { type: Number, required: true}
 });
 
 module.exports = mongoose.model('Book', bookSchema);
