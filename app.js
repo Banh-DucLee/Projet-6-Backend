@@ -1,10 +1,13 @@
 const express = require('express');
 const mongoose = require('mongoose');
-require('dotenv').config();
+const corsMiddleware = require('./middlewares/cors');
 
 const app = express();
 
-const userRoutes = require('./routes/user');
+// Set Response Header to allow any Origin
+app.use(corsMiddleware);
+
+const userRoutes = require('./routes/auth');
 
 mongoose.connect(`mongodb+srv://pekaizilla:${process.env.MONGODB_PASSWORD}@monvieuxgrimoire.pdxm7fc.mongodb.net/?retryWrites=true&w=majority&appName=MonVieuxGrimoire`, 
     {   useNewUrlParser: true,
@@ -13,14 +16,6 @@ mongoose.connect(`mongodb+srv://pekaizilla:${process.env.MONGODB_PASSWORD}@monvi
     .catch(() => console.log('Error connecting to MongoDB'));
 
 app.use(express.json());
-
-// Set Response Header
-app.use((req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization');
-    res.setHeader('Access-Control-Allow-Headers', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
-    next();
-});
 
 app.use('/api/auth', userRoutes);
 
