@@ -7,8 +7,6 @@ const app = express();
 // Set Response Header to allow any Origin
 app.use(corsMiddleware);
 
-const userRoutes = require('./routes/auth');
-
 mongoose.connect(`mongodb+srv://pekaizilla:${process.env.MONGODB_PASSWORD}@monvieuxgrimoire.pdxm7fc.mongodb.net/?retryWrites=true&w=majority&appName=MonVieuxGrimoire`, 
     {   useNewUrlParser: true,
         useUnifiedTopology: true })
@@ -17,6 +15,13 @@ mongoose.connect(`mongodb+srv://pekaizilla:${process.env.MONGODB_PASSWORD}@monvi
 
 app.use(express.json());
 
-app.use('/api/auth', userRoutes);
+const path = require('path');
+app.use('/images', express.static(path.join(__dirname, 'images')));
+
+const authRoutes = require('./routes/auth');
+app.use('/api/auth', authRoutes);
+
+const bookRoutes = require('./routes/book');
+app.use('/api/books', bookRoutes);
 
 module.exports = app;
