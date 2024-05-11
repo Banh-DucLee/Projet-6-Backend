@@ -23,7 +23,15 @@ exports.getBook = (req, res, next) => {
 };
 
 exports.getBestRating = (req, res, next) => {
-
+    Book.find().sort({averageRating: -1}).limit(3).then(books => {
+        res.status(200).json(
+            books
+        );
+    }).catch(error => {
+        res.status(400).json({
+            error
+        });
+    })
 };
 
 exports.createBook = (req, res, next) => {
@@ -48,7 +56,15 @@ exports.createBook = (req, res, next) => {
 };
 
 exports.modifyBook = (req, res, next) => {
-
+    Book.updateOne({_id: req.params.id}, {...req.body, _id: req.params.id}).then(() => {
+        res.status(200).json({
+            message: 'Book modified successfully'
+        });
+    }).catch(error => {
+        res.status(400).json({
+            error
+        });
+    })
 };
 
 exports.deleteBook = (req, res, next) => {
@@ -63,6 +79,46 @@ exports.deleteBook = (req, res, next) => {
     })
 };
 
-exports.rateBook = (req, res, next) => {
+exports.rateBook = async (req, res, next) => {
+    const {userId, rating} = req.body;
 
+    const book = await Book.findOne({_id: req.params.id});
+
+    if (!book) {
+        return res.status(404).json({
+            message: 'Book not found'
+        });
+    }
+
+    const alreadyRated = book.ratings.find(element => element.userId === userId);
+
+    if (alreadyRated) {
+        return res.status(400).json({
+            message: 'User already rated this book'
+        });
+    }
+
+    book.ratings.push({
+        userId: userId,
+        grade: rating
+    });
+
+    const totalRatings = book.ratings.length;
+
+    let totalGrade = 0;
+    book.ratings.forEach(rating => {
+        totalGrade += rating.grade;
+    });
+
+    book.averageRating = totalRatings === 0 ? 0 : totalGrade / totalRatings;
+
+    book.save().then(() => {
+        res.status(200).json(
+            book
+        );
+    }).catch(error => {
+        res.status(400).json({
+            error
+        });
+    });
 };
