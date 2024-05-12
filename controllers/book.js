@@ -1,4 +1,5 @@
 const Book = require('../models/book');
+const fs = require('fs');
 
 exports.getAllBooks = (req, res, next) => {
     Book.find().then(books => {
@@ -38,6 +39,10 @@ exports.createBook = (req, res, next) => {
     const bookObject = JSON.parse(req.body.book);
     delete bookObject._userId;
 
+    if ( bookObject.ratings[0].grade === 0) {
+        delete bookObject.ratings[0];
+    }
+
     const book = new Book({
         ...bookObject,
         userId: req.auth.userId,
@@ -67,16 +72,28 @@ exports.modifyBook = (req, res, next) => {
     })
 };
 
-exports.deleteBook = (req, res, next) => {
-    Book.deleteOne({ _id: req.params.id}).then(() => {
+exports.deleteBook = async (req, res, next) => {
+    try {
+        const book = await Book.findOne({_id: req.params.id});
+        if (!book) {
+            return res.status(404).json({
+                message: 'Book not found'
+            });
+        }
+        const filename = book.imageUrl.split('/').pop();
+
+        fs.unlinkSync(`images/${filename}`);
+
+        await Book.deleteOne({_id: req.params.id});
+
         res.status(200).json({
             message: 'Book deleted successfully'
         });
-    }).catch(error => {
+    } catch (error) {
         res.status(400).json({
             error
         });
-    })
+    }
 };
 
 exports.rateBook = async (req, res, next) => {
