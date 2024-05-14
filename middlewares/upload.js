@@ -9,9 +9,9 @@ function processImage(req, res, next) {
 
     const fileExtenion = req.file.originalname.split('.').pop().toLowerCase();
 
-    if (!['png', 'jpg', 'jpeg', 'gif'].includes(fileExtenion)) {
+    if (!['png', 'jpg', 'jpeg', 'webp'].includes(fileExtenion)) {
         return res.status(422).json({
-            error: 'Only .png, .jpg, .jpeg, .gif are allowed' 
+            error: 'Only .png, .jpg, .jpeg, .webp are allowed' 
         })
     }
 
