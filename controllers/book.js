@@ -127,7 +127,9 @@ exports.rateBook = async (req, res, next) => {
         totalGrade += rating.grade;
     });
 
-    book.averageRating = totalRatings === 0 ? 0 : totalGrade / totalRatings;
+    const avgRating = totalRatings === 0 ? 0 : totalGrade / totalRatings;
+
+    book.averageRating = Number.isInteger(avgRating) ? avgRating : Math.round(avgRating);
 
     book.save().then(() => {
         res.status(200).json(
