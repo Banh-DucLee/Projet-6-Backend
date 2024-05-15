@@ -54,22 +54,40 @@ exports.createBook = (req, res, next) => {
             message: 'Book created successfully'
         });
     }).catch(error => {
+        const filename = book.imageUrl.split('/').pop();
+        fs.unlinkSync(`images/${filename}`);
         res.status(400).json({
             error
         });
     })
 };
 
-exports.modifyBook = (req, res, next) => {
-    Book.updateOne({_id: req.params.id}, {...req.body, _id: req.params.id}).then(() => {
+exports.modifyBook = async (req, res, next) => {
+    try {
+        const bookId = req.params.id;
+        const update = {...req.body};
+        delete update._id;
+
+        if (req.file) {
+            const bookObject = await Book.findOne({_id: bookId});
+            if (bookObject.imageUrl) {
+                const filename = bookObject.imageUrl.split('/').pop();
+                fs.unlinkSync(`images/${filename}`);
+            }
+            update.imageUrl = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`;
+        }
+
+        await Book.findByIdAndUpdate(bookId, update);
+
         res.status(200).json({
             message: 'Book modified successfully'
         });
-    }).catch(error => {
+
+    } catch (error) {
         res.status(400).json({
             error
         });
-    })
+    }
 };
 
 exports.deleteBook = async (req, res, next) => {
