@@ -1,6 +1,6 @@
 const { body, validationResult } = require('express-validator');
 
-module.exports = [
+exports.validateAuth = [
     body('email').isEmail(),
     body('password').notEmpty(),
 
@@ -14,4 +14,5 @@ module.exports = [
         next();
     }
 ];
+
 
