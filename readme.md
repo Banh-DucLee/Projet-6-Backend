@@ -10,6 +10,9 @@ Avant de lancer le serveur, assurez-vous d'avoir installé Node.js et npm (Node 
 Clonez ce dépôt sur votre machine :
 ```
 git clone https://github.com/Pekaizilla/Projet-6-Backend.git backend
+```
+Puis aller dans le dossier backend :
+```
 cd backend
 ```
 Installez les dépendances nécessaires :
