@@ -29,6 +29,8 @@ function processImage(req, res, next) {
     
             next();
         });
+    } else {
+        next();
     }
 }
 
