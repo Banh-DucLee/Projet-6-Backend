@@ -47,4 +47,6 @@ server.on('listening', () => {
     console.log('Listening on '+ bind);
 });
 
-server.listen(process.env.PORT);
+//server.listen(process.env.PORT);
+
+module.exports = app;
